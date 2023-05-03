@@ -12,6 +12,7 @@ class GridCanvas(tk.Canvas):
         self.cell_size = cell_size
 
         self.draw_grid()
+        self.draw_nodes()
 
     def draw_grid(self):
         for i in range(self.rows):
@@ -21,7 +22,25 @@ class GridCanvas(tk.Canvas):
             self.create_line(0, j * self.cell_size, self.rows * self.cell_size, j * self.cell_size)
 
     
-    
+    def draw_nodes(self):
+
+        for i in range(self.rows - 1):
+            for j in range(self.columns - 1):
+                circle = self.create_oval(i * self.cell_size + self.cell_size - 15 ,
+                                          j * self.cell_size + self.cell_size - 15 ,
+                                          i * self.cell_size + self.cell_size + 15,
+                                          j * self.cell_size + self.cell_size + 15,
+                                          fill = "black", outline = "white")
+                self.tag_bind(circle, '<Button-1>', self.toggle_node)
+        
+
+        
+
+    def toggle_nodes(self):
+
+        
+
+        pass
 
         
         
