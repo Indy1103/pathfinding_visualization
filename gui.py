@@ -60,7 +60,12 @@ class GridCanvas(tk.Canvas):
             self.toggle_nodes(event)
 
         else:
-            self.add_edges(self.start_cords, end_cords)
+            node_1_status = self.itemcget(self.start_node_id, 'fill')
+            node_2_status = self.itemcget(end_node_id, 'fill')
+
+            if node_1_status == 'white' and node_2_status =='white':
+
+                self.add_edges(self.start_cords, end_cords)
             
 
         
