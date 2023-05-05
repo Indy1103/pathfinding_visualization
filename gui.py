@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class GridCanvas(tk.Canvas):
     def __init__(self, parent, rows, columns, cell_size):
         # ... (implementation of GridCanvas class)
@@ -14,7 +13,9 @@ class GridCanvas(tk.Canvas):
 
         self.draw_grid()
         self.draw_nodes()
-        
+
+        self.node_edge = {}
+
 
     def draw_grid(self):
         for i in range(self.rows):
@@ -46,18 +47,18 @@ class GridCanvas(tk.Canvas):
         self.start_cords = (float((self.start_cords[0]+ ((self.start_cords[2]- self.start_cords[0])/2))), 
                             float((self.start_cords[1]+((self.start_cords[3]- self.start_cords[1])/2))))
 
-        print("Start Cords: ", self.start_cords)
 
     def on_node_release(self, event):
         end_node_id = self.find_closest(event.x, event.y)
         end_cords = self.coords(end_node_id)
         end_cords = (float((end_cords[0]+(end_cords[2]- end_cords[0])/2)), 
                      float((end_cords[1]+(end_cords[3]- end_cords[1])/2)))
-        print(self.start_cords ," , ", end_cords)
-        
+                
         if self.start_node_id == end_node_id:
             
             self.toggle_nodes(event)
+
+
 
         else:
             node_1_status = self.itemcget(self.start_node_id, 'fill')
@@ -65,7 +66,7 @@ class GridCanvas(tk.Canvas):
 
             if node_1_status == 'white' and node_2_status =='white':
 
-                self.add_edges(self.start_cords, end_cords)
+                self.add_edges(self.start_cords, end_cords, self.start_node_id, end_node_id)
             
 
         
@@ -74,12 +75,32 @@ class GridCanvas(tk.Canvas):
         circle_color = self.itemcget(self.find_closest(event.x, event.y), 'fill')
 
         new_color = 'white' if circle_color == 'black' else 'black'
-                                     
-        self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
+
+        if new_color == 'white':
+
+            self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
+            self.node_edge[self.start_node_id] = []
+            
+
+
+        elif new_color == 'black':
+            
+            # cycle through the edges. Delete any edges. \
+            self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
+            for edge_id in self.node_edge[self.start_node_id]:
+
+                self.delete(edge_id)
+            
+            self.node_edge.pop(self.start_node_id)
+           
         
-    def add_edges(self, start_node, end_node):
+    
+    def add_edges(self, start_node, end_node, start_node_id, end_node_id):
         
         edge = self.create_line(start_node, end_node, fill="white")
+
+        self.node_edge[start_node_id].append(edge)
+        self.node_edge[end_node_id].append(edge)
     
                
         
