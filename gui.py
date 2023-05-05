@@ -42,13 +42,26 @@ class GridCanvas(tk.Canvas):
     def on_node_press(self, event):
         self.mouse_moved = False
         self.start_node_id = self.find_closest(event.x, event.y)
+        self.start_cords = self.coords(self.start_node_id)
+        self.start_cords = (float((self.start_cords[0]+ ((self.start_cords[2]- self.start_cords[0])/2))), 
+                            float((self.start_cords[1]+((self.start_cords[3]- self.start_cords[1])/2))))
+
+        print("Start Cords: ", self.start_cords)
 
     def on_node_release(self, event):
         end_node_id = self.find_closest(event.x, event.y)
+        end_cords = self.coords(end_node_id)
+        end_cords = (float((end_cords[0]+(end_cords[2]- end_cords[0])/2)), 
+                     float((end_cords[1]+(end_cords[3]- end_cords[1])/2)))
+        print(self.start_cords ," , ", end_cords)
         
         if self.start_node_id == end_node_id:
             
             self.toggle_nodes(event)
+
+        else:
+            self.add_edges(self.start_cords, end_cords)
+            
 
         
     def toggle_nodes(self, event):
@@ -60,7 +73,8 @@ class GridCanvas(tk.Canvas):
         self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
         
     def add_edges(self, start_node, end_node):
-        pass
+        
+        edge = self.create_line(start_node, end_node, fill="white")
     
                
         
