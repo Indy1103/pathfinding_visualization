@@ -14,6 +14,7 @@ class GridCanvas(tk.Canvas):
         self.draw_grid()
         self.draw_nodes()
 
+
         self.node_edge = {}
 
 
@@ -58,8 +59,6 @@ class GridCanvas(tk.Canvas):
             
             self.toggle_nodes(event)
 
-
-
         else:
             node_1_status = self.itemcget(self.start_node_id, 'fill')
             node_2_status = self.itemcget(end_node_id, 'fill')
@@ -82,7 +81,6 @@ class GridCanvas(tk.Canvas):
             self.node_edge[self.start_node_id] = []
             
 
-
         elif new_color == 'black':
             
             # cycle through the edges. Delete any edges. \
@@ -92,24 +90,47 @@ class GridCanvas(tk.Canvas):
                 self.delete(edge_id)
             
             self.node_edge.pop(self.start_node_id)
-           
-        
+                   
     
     def add_edges(self, start_node, end_node, start_node_id, end_node_id):
         
-        edge = self.create_line(start_node, end_node, fill="white")
+        edge = self.create_line(start_node, end_node, fill="white", tags= 'edge')
 
         self.node_edge[start_node_id].append(edge)
         self.node_edge[end_node_id].append(edge)
     
-               
+    def delete_edges(self):
+        
+        self.find_closest()
+        
+        pass
+
+
         
 class ControlPanel(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        # ... (create and configure UI elements within the ControlPanel)
-        pass
+        
+        self.algorithm_label = tk.Label(self, text="Algorithm:")
+        self.algorithm_label.pack(side="left")
+
+        self.algorithms = ["DFS", "BFS"]
+        self.selected_algorithm = tk.StringVar(self)
+        self.selected_algorithm.set(self.algorithms[0])
+
+        self.algorithm_dropdown = tk.OptionMenu(self, self.selected_algorithm, *self.algorithms)
+        self.algorithm_dropdown.pack(side="left")
+
+        self.start_button = tk.Button(self, text="Start", command=self.on_start_button_click)
+        self.start_button.pack(side="left")
+
+        self.clear_button = tk.Button(self, text="Clear", command=self.on_clear_button_click)
+        self.clear_button.pack(side="left")
 
     def on_start_button_click(self):
-        # ... (handle the start button click event)
-        pass
+        # Handle the start button click event here
+        print("Start button clicked. Selected algorithm:", self.selected_algorithm.get())
+
+    def on_clear_button_click(self):
+        # Handle the clear button click event here
+        print("Clear button clicked")
