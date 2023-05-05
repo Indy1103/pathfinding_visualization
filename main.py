@@ -13,11 +13,13 @@ def main():
     grid_canvas.pack(side=tk.LEFT)
     control_panel.pack(side=tk.RIGHT)
 
+    
+
     # Start the Tkinter event loop
     root.mainloop()
 
 if __name__ == "__main__":
     main()
 
-#testing testing 1 2 3
+
 
