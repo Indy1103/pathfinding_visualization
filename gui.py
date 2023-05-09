@@ -14,6 +14,8 @@ class GridCanvas(tk.Canvas):
         self.draw_grid()
         self.draw_nodes()
 
+        self.select_start_node_bool = False
+
         self.node_edge = {}
 
     def draw_grid(self):
@@ -90,17 +92,14 @@ class GridCanvas(tk.Canvas):
         self.node_edge[start_node_id].append(edge)
         self.node_edge[end_node_id].append(edge)
     
-    def delete_edges(self):
-        
-        self.find_closest()
-        
-        pass
 
 
         
 class ControlPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, grid_canvas):
         super().__init__(parent)
+
+        self.grid_canvas = grid_canvas
         
         self.algorithm_label = tk.Label(self, text="Algorithm:")
         self.algorithm_label.pack(side="left")
@@ -118,7 +117,7 @@ class ControlPanel(tk.Frame):
         self.clear_button = tk.Button(self, text="Clear", command=self.on_clear_button_click)
         self.clear_button.pack(side="left")
 
-        self.clear_button = tk.Button(self, text="Sellect Start node", command=self.select_start_node)
+        self.clear_button = tk.Button(self, text="Select Start node", command=self.select_start_node)
         self.clear_button.pack(side="left")
 
     def on_start_button_click(self):
@@ -130,8 +129,16 @@ class ControlPanel(tk.Frame):
         print("Clear button clicked")
 
     def select_start_node(self):
+
+        self.grid_canvas.select_start_node_bool = not self.grid_canvas.select_start_node_bool
+
+        if self.grid_canvas.select_start_node_bool:
+            self.grid_canvas.config(cursor='crosshair')
+        else:
+            self.grid_canvas.config(cursor='arrow')
         
-        pass
+        self.grid_canvas.update_idletasks()
+
 
 
 
