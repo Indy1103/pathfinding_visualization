@@ -11,12 +11,15 @@ class GridCanvas(tk.Canvas):
         self.cell_size = cell_size
         self.mouse_moved = False
 
+        self.starting_node = None
         self.draw_grid()
         self.draw_nodes()
-
-        self.select_start_node_bool = False
-
+        
         self.node_edge = {}
+        self.bind('<KeyPress-s>', self.toggle_start_node)
+        self.focus_set()
+        
+        
 
     def draw_grid(self):
         for i in range(self.rows):
@@ -38,6 +41,7 @@ class GridCanvas(tk.Canvas):
                 
                 self.tag_bind(circle, '<ButtonPress-1>', self.on_node_press)
                 self.tag_bind(circle, '<ButtonRelease-1>', self.on_node_release)
+                
         
     def on_node_press(self, event):
         self.mouse_moved = False
@@ -60,7 +64,7 @@ class GridCanvas(tk.Canvas):
             node_1_status = self.itemcget(self.start_node_id, 'fill')
             node_2_status = self.itemcget(end_node_id, 'fill')
 
-            if node_1_status == 'white' and node_2_status =='white':
+            if node_1_status == 'white' or 'orange' and node_2_status =='white' or 'orange':
 
                 self.add_edges(self.start_cords, end_cords, self.start_node_id, end_node_id)          
        
@@ -92,14 +96,34 @@ class GridCanvas(tk.Canvas):
         self.node_edge[start_node_id].append(edge)
         self.node_edge[end_node_id].append(edge)
     
+    def toggle_start_node(self, event):
+
+        x, y = self.winfo_pointerx() - self.winfo_rootx(), self.winfo_pointery() - self.winfo_rooty()
+        self.node = self.find_closest(x, y)
+        self.node = self.find_closest(event.x, event.y)        
+        self.colour = self.itemcget( self.node , 'fill')
+        
+        if self.colour == 'white' and self.starting_node:
+            self.prev_start_node = self.starting_node
+            self.starting_node = self.node
+
+            self.itemconfig(self.prev_start_node, fill= 'white')
+            self.itemconfig(self.starting_node, fill= 'orange')
+
+        if self.colour == 'white':
+
+            self.starting_node = self.node
+            self.itemconfig(self.starting_node, fill= 'orange')
+
+        
 
 
         
 class ControlPanel(tk.Frame):
-    def __init__(self, parent, grid_canvas):
+    def __init__(self, parent):
         super().__init__(parent)
 
-        self.grid_canvas = grid_canvas
+    
         
         self.algorithm_label = tk.Label(self, text="Algorithm:")
         self.algorithm_label.pack(side="left")
@@ -117,9 +141,6 @@ class ControlPanel(tk.Frame):
         self.clear_button = tk.Button(self, text="Clear", command=self.on_clear_button_click)
         self.clear_button.pack(side="left")
 
-        self.clear_button = tk.Button(self, text="Select Start node", command=self.select_start_node)
-        self.clear_button.pack(side="left")
-
     def on_start_button_click(self):
         # Handle the start button click event here
         print("Start button clicked. Selected algorithm:", self.selected_algorithm.get())
@@ -128,19 +149,9 @@ class ControlPanel(tk.Frame):
         # Handle the clear button click event here
         print("Clear button clicked")
 
-    def select_start_node(self):
+    
 
-        self.grid_canvas.select_start_node_bool = not self.grid_canvas.select_start_node_bool
-
-        if self.grid_canvas.select_start_node_bool:
-            self.grid_canvas.config(cursor='crosshair')
-        else:
-            self.grid_canvas.config(cursor='arrow')
-        
-        self.grid_canvas.update_idletasks()
-
-
-
+    
 
 """
 Toggle Node 
