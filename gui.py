@@ -14,9 +14,7 @@ class GridCanvas(tk.Canvas):
         self.draw_grid()
         self.draw_nodes()
 
-
         self.node_edge = {}
-
 
     def draw_grid(self):
         for i in range(self.rows):
@@ -24,7 +22,6 @@ class GridCanvas(tk.Canvas):
         
         for j in range(self.columns):
             self.create_line(0, j * self.cell_size, self.rows * self.cell_size, j * self.cell_size, fill= "#444444")
-
     
     def draw_nodes(self):
         
@@ -40,14 +37,12 @@ class GridCanvas(tk.Canvas):
                 self.tag_bind(circle, '<ButtonPress-1>', self.on_node_press)
                 self.tag_bind(circle, '<ButtonRelease-1>', self.on_node_release)
         
-
     def on_node_press(self, event):
         self.mouse_moved = False
         self.start_node_id = self.find_closest(event.x, event.y)
         self.start_cords = self.coords(self.start_node_id)
         self.start_cords = (float((self.start_cords[0]+ ((self.start_cords[2]- self.start_cords[0])/2))), 
                             float((self.start_cords[1]+((self.start_cords[3]- self.start_cords[1])/2))))
-
 
     def on_node_release(self, event):
         end_node_id = self.find_closest(event.x, event.y)
@@ -65,10 +60,8 @@ class GridCanvas(tk.Canvas):
 
             if node_1_status == 'white' and node_2_status =='white':
 
-                self.add_edges(self.start_cords, end_cords, self.start_node_id, end_node_id)
-            
-
-        
+                self.add_edges(self.start_cords, end_cords, self.start_node_id, end_node_id)          
+       
     def toggle_nodes(self, event):
 
         circle_color = self.itemcget(self.find_closest(event.x, event.y), 'fill')
@@ -80,7 +73,6 @@ class GridCanvas(tk.Canvas):
             self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
             self.node_edge[self.start_node_id] = []
             
-
         elif new_color == 'black':
             
             # cycle through the edges. Delete any edges. \
@@ -90,8 +82,7 @@ class GridCanvas(tk.Canvas):
                 self.delete(edge_id)
             
             self.node_edge.pop(self.start_node_id)
-                   
-    
+                       
     def add_edges(self, start_node, end_node, start_node_id, end_node_id):
         
         edge = self.create_line(start_node, end_node, fill="white", tags= 'edge')
@@ -127,6 +118,9 @@ class ControlPanel(tk.Frame):
         self.clear_button = tk.Button(self, text="Clear", command=self.on_clear_button_click)
         self.clear_button.pack(side="left")
 
+        self.clear_button = tk.Button(self, text="Sellect Start node", command=self.select_start_node)
+        self.clear_button.pack(side="left")
+
     def on_start_button_click(self):
         # Handle the start button click event here
         print("Start button clicked. Selected algorithm:", self.selected_algorithm.get())
@@ -134,3 +128,28 @@ class ControlPanel(tk.Frame):
     def on_clear_button_click(self):
         # Handle the clear button click event here
         print("Clear button clicked")
+
+    def select_start_node(self):
+        
+        pass
+
+
+
+"""
+Toggle Node 
+
+1. Select start node function
+2. switches cursor 
+3. Change the mode on grid canvans
+4. Put a condiiton on button press one and button press two switch those off
+5. Go into another method
+    1. Checks if the node is white.
+    2. If it is white 
+    3. Select start node.
+    4. If a start node already exists. 
+    5. Replace that start node.
+    6. Give warning message to only select start node on a node that already exists
+
+"""
+
+

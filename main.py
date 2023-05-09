@@ -13,8 +13,6 @@ def main():
     grid_canvas.pack(side=tk.LEFT)
     control_panel.pack(side=tk.RIGHT)
 
-    
-
     # Start the Tkinter event loop
     root.mainloop()
 
