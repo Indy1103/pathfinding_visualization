@@ -18,9 +18,11 @@ class GridCanvas(tk.Canvas):
         self.draw_nodes()
         
         self.node_edge = {}
+        self.adjacency_list = {}
         self.bind('<KeyPress-s>', self.toggle_start_node)
         self.focus_set()
         
+
         
 
     def draw_grid(self):
@@ -64,10 +66,13 @@ class GridCanvas(tk.Canvas):
 
         else:
             node_1_status = self.itemcget(self.start_node_id, 'fill')
+            print(node_1_status)
+            
             node_2_status = self.itemcget(end_node_id, 'fill')
+            print(node_2_status)
 
-            if node_1_status == 'white' or 'orange' and node_2_status =='white' or 'orange':
-
+            if node_1_status == ('white' or 'orange') and node_2_status ==('white' or 'orange'):
+                
                 self.add_edges(self.start_cords, end_cords, self.start_node_id, end_node_id)          
        
     def toggle_nodes(self, event):
@@ -81,6 +86,7 @@ class GridCanvas(tk.Canvas):
             self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
             print(self.start_node_id)
             self.node_edge[self.start_node_id] = []
+            self.adjacency_list[int(self.start_node_id[0])] = set()
             
         elif new_color == 'black':
             
@@ -91,6 +97,8 @@ class GridCanvas(tk.Canvas):
                 self.delete(edge_id)
             
             self.node_edge.pop(self.start_node_id)
+            self.adjacency_list.pop(int(self.start_node_id[0]))
+
                        
     def add_edges(self, start_node, end_node, start_node_id, end_node_id):
         
@@ -98,6 +106,9 @@ class GridCanvas(tk.Canvas):
 
         self.node_edge[start_node_id].append(edge)
         self.node_edge[end_node_id].append(edge)
+
+        self.adjacency_list[int(start_node_id[0])].add(int(end_node_id[0]))
+        self.adjacency_list[int(end_node_id[0])].add(int(start_node_id[0]))
     
     def toggle_start_node(self, event):
 
@@ -118,17 +129,7 @@ class GridCanvas(tk.Canvas):
             self.starting_node = self.node
             self.itemconfig(self.starting_node, fill= 'orange')
     
-    def get_graph(self):
-        graph = {}
-        for node, edges in self.node_edge.items():
-            neighbors = set()
-            for edge in edges:
-                coords = self.coords(edge)
-                start, end = (coords[0], coords[1]), (coords[2], coords[3])
-                other_node = self.find_closest(*end) if node == self.find_closest(*start) else self.find_closest(*start)
-                neighbors.add(other_node)
-            graph[node] = neighbors
-        return graph
+
         
 
 
@@ -158,11 +159,12 @@ class ControlPanel(tk.Frame):
         # Handle the start button click event here
 
         algorithm = self.selected_algorithm.get()
-        graph = self.grid_canvas.get_graph()
+        graph = self.grid_canvas.adjacency_list
         
         print(graph)
 
-        starting_node = self.grid_canvas.starting_node
+        starting_node = int(self.grid_canvas.starting_node[0])
+        print(starting_node)
 
         if algorithm == "DFS":
             result = dfs(graph, starting_node)
