@@ -1,11 +1,10 @@
 
 def dfs(graph, start, visited=None):
 
-    
     if visited is None:
-        visited = set()
+        visited = []
 
-    visited.add(start)
+    visited.append(start)
 
     for neighbor in graph[start]:
         if neighbor not in visited:
