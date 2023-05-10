@@ -7,7 +7,7 @@ def main():
 
     # Create instances of the custom classes, specifying the parent widget
     grid_canvas = GridCanvas(root, rows=10, columns=10, cell_size=70)
-    control_panel = ControlPanel(root)
+    control_panel = ControlPanel(root, grid_canvas)
 
     # Add the custom widgets to the top-level window's layout
     grid_canvas.pack(side=tk.LEFT)

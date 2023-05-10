@@ -1,4 +1,6 @@
 import tkinter as tk
+from algorithms.dfs import dfs
+from algorithms.bfs import bfs
 
 class GridCanvas(tk.Canvas):
     def __init__(self, parent, rows, columns, cell_size):
@@ -45,7 +47,7 @@ class GridCanvas(tk.Canvas):
         
     def on_node_press(self, event):
         self.mouse_moved = False
-        self.start_node_id = self.find_closest(event.x, event.y)
+        self.start_node_id = (self.find_closest(event.x, event.y))
         self.start_cords = self.coords(self.start_node_id)
         self.start_cords = (float((self.start_cords[0]+ ((self.start_cords[2]- self.start_cords[0])/2))), 
                             float((self.start_cords[1]+((self.start_cords[3]- self.start_cords[1])/2))))
@@ -77,6 +79,7 @@ class GridCanvas(tk.Canvas):
         if new_color == 'white':
 
             self.itemconfig(self.find_closest(event.x, event.y), fill= new_color)
+            print(self.start_node_id)
             self.node_edge[self.start_node_id] = []
             
         elif new_color == 'black':
@@ -114,17 +117,27 @@ class GridCanvas(tk.Canvas):
 
             self.starting_node = self.node
             self.itemconfig(self.starting_node, fill= 'orange')
-
+    
+    def get_graph(self):
+        graph = {}
+        for node, edges in self.node_edge.items():
+            neighbors = set()
+            for edge in edges:
+                coords = self.coords(edge)
+                start, end = (coords[0], coords[1]), (coords[2], coords[3])
+                other_node = self.find_closest(*end) if node == self.find_closest(*start) else self.find_closest(*start)
+                neighbors.add(other_node)
+            graph[node] = neighbors
+        return graph
         
 
 
         
 class ControlPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, grid_canvas):
         super().__init__(parent)
 
-    
-        
+        self.grid_canvas = grid_canvas
         self.algorithm_label = tk.Label(self, text="Algorithm:")
         self.algorithm_label.pack(side="left")
 
@@ -143,7 +156,21 @@ class ControlPanel(tk.Frame):
 
     def on_start_button_click(self):
         # Handle the start button click event here
-        print("Start button clicked. Selected algorithm:", self.selected_algorithm.get())
+
+        algorithm = self.selected_algorithm.get()
+        graph = self.grid_canvas.get_graph()
+        
+        print(graph)
+
+        starting_node = self.grid_canvas.starting_node
+
+        if algorithm == "DFS":
+            result = dfs(graph, starting_node)
+        elif algorithm == "BFS":
+            result = bfs(graph, starting_node)
+
+
+        print("Start button clicked. Selected algorithm:", self.selected_algorithm.get(), "Result", result)
 
     def on_clear_button_click(self):
         # Handle the clear button click event here
