@@ -1,6 +1,6 @@
 from collections import deque
 
-def bfs(graph, start):
+def bfs(graph, start, callback=None):
     visited = []
     queue = deque([start])
 
@@ -8,6 +8,8 @@ def bfs(graph, start):
         node = queue.popleft()
         if node not in visited:
             visited.append(node)
+            if callback:
+                callback(node)
             queue.extend(neighbor for neighbor in graph[node] if neighbor not in visited)
 
     return visited

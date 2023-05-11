@@ -41,7 +41,7 @@ class GridCanvas(tk.Canvas):
                                           j * self.cell_size + self.cell_size - 15 ,
                                           i * self.cell_size + self.cell_size + 15,
                                           j * self.cell_size + self.cell_size + 15,
-                                          fill = "black", outline = "black")
+                                          fill = "black", outline = "black", tags = 'node')
                 
                 self.tag_bind(self.circle, '<ButtonPress-1>', self.on_node_press)
                 self.tag_bind(self.circle, '<ButtonRelease-1>', self.on_node_release)
@@ -133,16 +133,22 @@ class GridCanvas(tk.Canvas):
     def toggle_clear(self):
 
         self.starting_node = None
-        self.delete(self.circle)
-        self.delete(self.edge)
+        self.delete("node")  # Delete all nodes
+        self.delete("edge")  # Delete all edges
         self.draw_grid()
         self.draw_nodes()
-        
+
         self.node_edge = {}
         self.adjacency_list = {}
 
         print("Clear Toggled")
-        
+
+    def visualize_path(self, visited_nodes):
+        for index, node in enumerate(visited_nodes):
+            self.after(index * 500, self.color_node, node, "blue")
+
+    def color_node(self, node_id, color):
+        self.itemconfig(node_id, fill=color)       
 
 
         
@@ -178,11 +184,19 @@ class ControlPanel(tk.Frame):
         starting_node = int(self.grid_canvas.starting_node[0])
         print(starting_node)
 
-        if algorithm == "DFS":
-            result = dfs(graph, starting_node)
-        elif algorithm == "BFS":
-            result = bfs(graph, starting_node)
+        def update_visualization(node_id):
+            self.grid_canvas.color_node(node_id, "blue")
+            self.grid_canvas.update_idletasks()
+            self.grid_canvas.after(500)
 
+        if algorithm == "DFS":
+            result = dfs(graph, starting_node, callback=update_visualization)
+        elif algorithm == "BFS":
+            result = bfs(graph, starting_node, callback=update_visualization)
+
+        for node in graph:
+            self.grid_canvas.color_node(node, "white")
+        
 
         print("Start button clicked. Selected algorithm:", self.selected_algorithm.get(), "Result", result)
 
@@ -190,26 +204,4 @@ class ControlPanel(tk.Frame):
         
         self.grid_canvas.toggle_clear()
         print("Clear button clicked")
-
-    
-
-    
-
-"""
-Toggle Node 
-
-1. Select start node function
-2. switches cursor 
-3. Change the mode on grid canvans
-4. Put a condiiton on button press one and button press two switch those off
-5. Go into another method
-    1. Checks if the node is white.
-    2. If it is white 
-    3. Select start node.
-    4. If a start node already exists. 
-    5. Replace that start node.
-    6. Give warning message to only select start node on a node that already exists
-
-"""
-
 
