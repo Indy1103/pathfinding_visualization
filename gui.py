@@ -37,14 +37,14 @@ class GridCanvas(tk.Canvas):
         #Create Circles
         for i in range(self.rows - 1):
             for j in range(self.columns - 1):
-                circle = self.create_oval(i * self.cell_size + self.cell_size - 15 ,
+                self.circle = self.create_oval(i * self.cell_size + self.cell_size - 15 ,
                                           j * self.cell_size + self.cell_size - 15 ,
                                           i * self.cell_size + self.cell_size + 15,
                                           j * self.cell_size + self.cell_size + 15,
                                           fill = "black", outline = "black")
                 
-                self.tag_bind(circle, '<ButtonPress-1>', self.on_node_press)
-                self.tag_bind(circle, '<ButtonRelease-1>', self.on_node_release)
+                self.tag_bind(self.circle, '<ButtonPress-1>', self.on_node_press)
+                self.tag_bind(self.circle, '<ButtonRelease-1>', self.on_node_release)
                 
         
     def on_node_press(self, event):
@@ -102,10 +102,10 @@ class GridCanvas(tk.Canvas):
                        
     def add_edges(self, start_node, end_node, start_node_id, end_node_id):
         
-        edge = self.create_line(start_node, end_node, fill="white", tags= 'edge')
+        self.edge = self.create_line(start_node, end_node, fill="white", tags= 'edge')
 
-        self.node_edge[start_node_id].append(edge)
-        self.node_edge[end_node_id].append(edge)
+        self.node_edge[start_node_id].append(self.edge)
+        self.node_edge[end_node_id].append(self.edge)
 
         self.adjacency_list[int(start_node_id[0])].add(int(end_node_id[0]))
         self.adjacency_list[int(end_node_id[0])].add(int(start_node_id[0]))
@@ -130,6 +130,18 @@ class GridCanvas(tk.Canvas):
             self.itemconfig(self.starting_node, fill= 'orange')
     
 
+    def toggle_clear(self):
+
+        self.starting_node = None
+        self.delete(self.circle)
+        self.delete(self.edge)
+        self.draw_grid()
+        self.draw_nodes()
+        
+        self.node_edge = {}
+        self.adjacency_list = {}
+
+        print("Clear Toggled")
         
 
 
@@ -175,7 +187,8 @@ class ControlPanel(tk.Frame):
         print("Start button clicked. Selected algorithm:", self.selected_algorithm.get(), "Result", result)
 
     def on_clear_button_click(self):
-        # Handle the clear button click event here
+        
+        self.grid_canvas.toggle_clear()
         print("Clear button clicked")
 
     
