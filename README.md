@@ -66,4 +66,4 @@ This project is licensed under the [MIT License](LICENSE).
 ## Acknowledgements
 
 - Tkinter for providing the graphical user interface
-- OpenAI for providing guidance on implementing the visualization features
+
